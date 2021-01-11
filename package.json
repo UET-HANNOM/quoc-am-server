@@ -1,0 +1,9 @@
+{
+  "name": "cssocial",
+  "version": "1.0.0",
+  "description": "A social network for cs tech",
+  "main": "src/server.ts",
+  "repository": "https://github.com/CS-technology/cs-social-server.git",
+  "author": "phamquyetthang <quyetthang.phucchi@gmail.com>",
+  "license": "MIT"
+}
