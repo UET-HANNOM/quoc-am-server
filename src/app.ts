@@ -1,12 +1,12 @@
 import "dotenv/config";
-import { ROUTE } from "./core/interfaces";
 import express from "express";
 import mongoose from "mongoose";
 import hpp from "hpp";
 import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
-import { Logger } from "./core/utils";
+import { ROUTE } from "@core/interfaces";
+import { Logger } from "@core/utils";
 export default class App {
   public app: express.Application;
   public port: string | number;

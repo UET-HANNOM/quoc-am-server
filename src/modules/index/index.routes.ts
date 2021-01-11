@@ -1,4 +1,4 @@
-import { ROUTE } from "core/interfaces";
+import { ROUTE } from "@core/interfaces";
 import { Router } from "express";
 import IndexController from "./index.controller";
 

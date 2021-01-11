@@ -1,6 +1,6 @@
-import { validateEnv } from "./core/utils";
+import { validateEnv } from "@core/utils";
+import { InderRoutes } from "@modules/index";
 import App from "./app";
-import { InderRoutes } from "./modules/index";
 
 validateEnv();
 
