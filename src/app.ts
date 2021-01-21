@@ -17,9 +17,10 @@ export default class App {
     this.app = express();
     this.port = process.env.PORT || 5000;
     this.production = process.env.NODE_ENV == "production" ? true : false;
-    this.initializeRoutes(routes);
     this.connectToDatabase();
     this.initializeMiddleware();
+    this.initializeRoutes(routes);
+    this.initializeErrorMiddleware();
   }
 
   public listen() {
@@ -38,9 +39,12 @@ export default class App {
       this.app.use(morgan("dev"));
       this.app.use(cors({ origin: true, credentials: true }));
     }
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({extended: true}));
+  }
+  private initializeErrorMiddleware(){
     this.app.use(errorMiddleware);
   }
-
   private initializeRoutes(routes: ROUTE[]) {
     routes.forEach((route) => {
       this.app.use("/", route.router);

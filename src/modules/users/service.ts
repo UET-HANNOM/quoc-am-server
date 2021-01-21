@@ -1,5 +1,5 @@
 import { HttpException } from "@core/exceptions";
-import { isEmptyObject } from "@core/utils";
+import { isEmptyObject, Logger } from "@core/utils";
 import { TokenData } from "@modules/auth/interface";
 import gravatar from "gravatar";
 import bcrypt from "bcrypt";
@@ -13,7 +13,7 @@ export default class UserService {
     if (isEmptyObject(model)) {
       throw new HttpException(400, "Model is empty");
     } else {
-      const user = this.userSchema.findOne({ email: model.email });
+      const user = await this.userSchema.findOne({ email: model.email });
       if (user) {
         throw new HttpException(
           409,
@@ -26,7 +26,7 @@ export default class UserService {
           default: "mm",
         });
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(model.password!, salt);
+        const hashedPassword = await bcrypt.hash(model.password, salt);
         const createdUser: IUser = await this.userSchema.create({
           ...model,
           password: hashedPassword,
