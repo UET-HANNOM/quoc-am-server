@@ -6,4 +6,4 @@
 - Express
 - Typescript
   
-## Command# cs-social-server
+## Command
