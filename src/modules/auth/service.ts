@@ -12,7 +12,7 @@ export default class AuthService {
     if (isEmptyObject(model)) {
       throw new HttpException(400, "Model is empty");
     } else {
-      const user: IUser = await this.userSchema.findOne({ email: model.email });
+      const user = await this.userSchema.findOne({ email: model.email });
       if (!user) {
         throw new HttpException(409, `Email is not exist!`);
       } else {
@@ -22,6 +22,14 @@ export default class AuthService {
           return this.createToken(user);
         }
       }
+    }
+  }
+  public async getCurrentLoginUser(userId: string){ //
+    const user = await this.userSchema.findById(userId);
+    if(!user){
+      throw new HttpException(404, "User Id is not exist")
+    }else{
+      return user
     }
   }
   private createToken(user: IUser): TokenData {

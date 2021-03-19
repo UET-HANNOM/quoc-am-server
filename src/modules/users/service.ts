@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import UserSchema from "./model";
 import IUser from "./interface";
 import jws from "jsonwebtoken";
+import e from "express";
 
 export default class UserService {
   public userSchema = UserSchema;
@@ -36,6 +37,44 @@ export default class UserService {
 
         return this.createToken(createdUser);
       }
+    }
+  }
+
+  public async updateUser(userId: string, model: any){
+    if (isEmptyObject(model)) {
+      throw new HttpException(400, "Model is empty");
+    } else {
+      const user = await this.userSchema.findById(userId);
+      if (!user) {
+        throw new HttpException(400, `User id is not exist.`);
+      } else {
+        let updateUserById;
+        if (model.password) {
+          const salt = await bcrypt.genSalt(10);
+          const hashedPassword = await bcrypt.hash(model.password, salt);
+          updateUserById = await this.userSchema.findByIdAndUpdate(userId, {
+            ...model,
+            password: hashedPassword,
+          });
+        } else {
+          updateUserById = await this.userSchema.findByIdAndUpdate(userId, {
+            ...model,
+          });
+        }
+        
+        if(!updateUserById) throw new HttpException(409, "You are not an user")
+        return updateUserById
+      }
+    }
+  }
+
+  public async getUserbyId(userId: string) {
+    //getbyid
+    const user = await this.userSchema.findById(userId);
+    if (!user) {
+      throw new HttpException(404, "User Id is not exist");
+    } else {
+      return user;
     }
   }
   private createToken(user: IUser): TokenData {
