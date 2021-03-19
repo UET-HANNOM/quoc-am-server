@@ -1,17 +1,17 @@
 import { ROUTE } from "@core/interfaces";
 import { Router } from "express";
-import UsersController from "./controller";
+import AuthController from "./controller";
 export default class AuthRoutes implements ROUTE {
-  public path = "/api/users";
+  public path = "/api/auth";
   public router = Router();
 
-  public userController = new UsersController();
+  public authController = new AuthController();
 
   constructor(){
     this.initalizeRoutes();
   }
 
   private initalizeRoutes(){
-    this.router.post(this.path, this.userController.register) //POST
+    this.router.post(this.path, this.authController.login) //POST
   }
 }

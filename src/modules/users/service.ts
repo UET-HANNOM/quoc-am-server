@@ -40,7 +40,7 @@ export default class UserService {
   }
   private createToken(user: IUser): TokenData {
     const dataInToken: { id: string } = { id: user._id };
-    const secret: string = process.env.JWT_TOKEN_SECRET!;
+    const secret: string = process.env.JWT_TOKEN_SECRET || "cstech";
     const expriresIn: number = 60;
     return {
       token: jws.sign(dataInToken, secret, { expiresIn: expriresIn }),

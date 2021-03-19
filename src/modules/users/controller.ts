@@ -7,6 +7,7 @@ export default class UsersController {
   public register = async(req: Request, res: Response, next: NextFunction) => {
     try {
       const model : any = req.body;
+      console.log(model)
       const tokenData: TokenData = await this.userService.createUser(model);
       res.status(201).json(tokenData);
     } catch (err) {
