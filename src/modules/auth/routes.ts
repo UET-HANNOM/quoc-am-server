@@ -14,6 +14,6 @@ export default class AuthRoutes implements ROUTE {
 
   private initalizeRoutes(){
     this.router.post(this.path, this.authController.login) //POST
-    this.router.get(this.path, authMiddleware, this.authController.getCurrentLoginUser) 
+    this.router.get(this.path, authMiddleware, this.authController.getCurrentLoginUser)  // chen authMiddleware vào sẽ giúp xác thực token
   }
 }

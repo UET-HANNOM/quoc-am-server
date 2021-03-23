@@ -13,5 +13,7 @@ export default class UsersRoutes implements ROUTE {
 
   private initalizeRoutes(){
     this.router.post(this.path, this.userController.register) //POST
+    this.router.put(this.path + "/:id", this.userController.updateUser) // update là Put
+    this.router.get(this.path + "/:id", this.userController.getUserbyId)
   }
 }

@@ -49,7 +49,7 @@ export default class UserService {
         throw new HttpException(400, `User id is not exist.`);
       } else {
         let updateUserById;
-        if (model.password) {
+        if (model.password) { // Nếu muốn update passwork => băm pass
           const salt = await bcrypt.genSalt(10);
           const hashedPassword = await bcrypt.hash(model.password, salt);
           updateUserById = await this.userSchema.findByIdAndUpdate(userId, {
@@ -57,13 +57,13 @@ export default class UserService {
             password: hashedPassword,
           });
         } else {
-          updateUserById = await this.userSchema.findByIdAndUpdate(userId, {
+          updateUserById = await this.userSchema.findByIdAndUpdate(userId, { // neu khong update binh thuong
             ...model,
           });
         }
         
-        if(!updateUserById) throw new HttpException(409, "You are not an user")
-        return updateUserById
+        if(!updateUserById) throw new HttpException(409, "You are not an user") // Nếu update không thành công
+        return updateUserById // Trả về controller
       }
     }
   }

@@ -25,7 +25,7 @@ export default class UsersController {
   
   public updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = await this.userService.getUserbyId(req.body);
+      const user = await this.userService.updateUser(req.params.id,req.body); // chuyền vào id và model
       res.status(200).json(user);
     } catch (error) {
       next(error);
