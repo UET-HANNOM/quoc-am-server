@@ -116,6 +116,15 @@ export default class UserService {
       item: docs,
     } as IPagination<IUser>;
   }
+
+  public async deleteUser(userId: string){
+    const deletedUser = await this.userSchema.findByIdAndDelete(userId).exec();
+    if(!deletedUser){
+      throw new HttpException(400, 'Your id is invalid !')
+    }else{
+      return deletedUser;
+    }
+  }
   private createToken(user: IUser): TokenData {
     const dataInToken: { id: string } = { id: user._id };
     const secret: string = process.env.JWT_TOKEN_SECRET || "cstech";

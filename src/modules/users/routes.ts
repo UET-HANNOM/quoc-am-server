@@ -1,4 +1,5 @@
 import { ROUTE } from "@core/interfaces";
+import { authMiddleware } from "@core/middleware";
 import { Router } from "express";
 import UsersController from "./controller";
 export default class UsersRoutes implements ROUTE {
@@ -17,5 +18,6 @@ export default class UsersRoutes implements ROUTE {
     this.router.get(this.path + "/:id", this.userController.getUserbyId)
     this.router.get(this.path, this.userController.getAllUser)
     this.router.get(this.path + "/paging/:page", this.userController.getAllUserPaging)
+    this.router.delete(this.path + "/:id", authMiddleware, this.userController.deleteUser)
   }
 }
