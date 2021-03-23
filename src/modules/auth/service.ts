@@ -24,7 +24,7 @@ export default class AuthService {
       }
     }
   }
-  public async getCurrentLoginUser(userId: string){ //
+  public async getCurrentLoginUser(userId: string){ // get user by token
     const user = await this.userSchema.findById(userId);
     if(!user){
       throw new HttpException(404, "User Id is not exist")

@@ -7,6 +7,7 @@ import UserSchema from "./model";
 import IUser from "./interface";
 import jws from "jsonwebtoken";
 import e from "express";
+import { IPagination } from "@core/interfaces";
 
 export default class UserService {
   public userSchema = UserSchema;
@@ -40,7 +41,7 @@ export default class UserService {
     }
   }
 
-  public async updateUser(userId: string, model: any){
+  public async updateUser(userId: string, model: any) {
     if (isEmptyObject(model)) {
       throw new HttpException(400, "Model is empty");
     } else {
@@ -49,7 +50,8 @@ export default class UserService {
         throw new HttpException(400, `User id is not exist.`);
       } else {
         let updateUserById;
-        if (model.password) { // Nếu muốn update passwork => băm pass
+        if (model.password) {
+          // Nếu muốn update passwork => băm pass
           const salt = await bcrypt.genSalt(10);
           const hashedPassword = await bcrypt.hash(model.password, salt);
           updateUserById = await this.userSchema.findByIdAndUpdate(userId, {
@@ -57,13 +59,15 @@ export default class UserService {
             password: hashedPassword,
           });
         } else {
-          updateUserById = await this.userSchema.findByIdAndUpdate(userId, { // neu khong update binh thuong
+          updateUserById = await this.userSchema.findByIdAndUpdate(userId, {
+            // neu khong update binh thuong
             ...model,
           });
         }
-        
-        if(!updateUserById) throw new HttpException(409, "You are not an user") // Nếu update không thành công
-        return updateUserById // Trả về controller
+
+        if (!updateUserById)
+          throw new HttpException(409, "You are not an user"); // Nếu update không thành công
+        return updateUserById; // Trả về controller
       }
     }
   }
@@ -76,6 +80,41 @@ export default class UserService {
     } else {
       return user;
     }
+  }
+
+  public async getAllUser() {
+    // lay tat ca user
+    const user = await this.userSchema.find().exec();
+    if (!user) {
+      throw new HttpException(404, "Gãy");
+    } else {
+      return user;
+    }
+  }
+  public async getAllUserPaging(
+    keyword: string,
+    page: number
+  ): Promise<IPagination<IUser>> {
+    // lay tat ca user theo gioi han, phan trang, search
+    let query;
+    if (keyword) { // search ban ghi co chua keyword
+      query =this.userSchema.find({
+        $or: [{email: keyword}, {firstname: keyword}, {lastname: keyword}]
+      }).sort({ date: -1 });
+    }else{
+      query =this.userSchema.find().sort({ date: -1 });
+    }
+    const docs = await query
+      .skip((page - 1) * 5) // bo qua bao nhieu ban ghi
+      .limit(5) // lay tiep bao nhieu ban ghi
+      .exec();
+    const rows = await query.estimatedDocumentCount().exec(); // tong so ban ghi
+    return {
+      total: rows,
+      page: page,
+      pageSize: 5,
+      item: docs,
+    } as IPagination<IUser>;
   }
   private createToken(user: IUser): TokenData {
     const dataInToken: { id: string } = { id: user._id };
