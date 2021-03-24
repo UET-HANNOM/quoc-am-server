@@ -6,7 +6,6 @@ import bcrypt from "bcrypt";
 import UserSchema from "./model";
 import IUser from "./interface";
 import jws from "jsonwebtoken";
-import e from "express";
 import { IPagination } from "@core/interfaces";
 
 export default class UserService {
@@ -49,11 +48,16 @@ export default class UserService {
       if (!user) {
         throw new HttpException(400, `User id is not exist.`);
       } else {
-        const checkEmailExit = await this.userSchema.find({
-          $and: [{ email: { $eq: model.email } }, { _id: { $ne: userId } }],
-        }).exec();
-        if(checkEmailExit.length !== 0 ){
-          throw new HttpException(400, 'Your email have been use by another user')
+        const checkEmailExit = await this.userSchema
+          .find({
+            $and: [{ email: { $eq: model.email } }, { _id: { $ne: userId } }],
+          })
+          .exec();
+        if (checkEmailExit.length !== 0) {
+          throw new HttpException(
+            400,
+            "Your email have been use by another user"
+          );
         }
         let updateUserById;
         if (model.password) {
