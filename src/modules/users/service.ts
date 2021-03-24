@@ -49,20 +49,34 @@ export default class UserService {
       if (!user) {
         throw new HttpException(400, `User id is not exist.`);
       } else {
+        const checkEmailExit = await this.userSchema.find({
+          $and: [{ email: { $eq: model.email } }, { _id: { $ne: userId } }],
+        }).exec();
+        if(checkEmailExit.length !== 0 ){
+          throw new HttpException(400, 'Your email have been use by another user')
+        }
         let updateUserById;
         if (model.password) {
           // Nếu muốn update passwork => băm pass
           const salt = await bcrypt.genSalt(10);
           const hashedPassword = await bcrypt.hash(model.password, salt);
-          updateUserById = await this.userSchema.findByIdAndUpdate(userId, {
-            ...model,
-            password: hashedPassword,
-          });
+          updateUserById = await this.userSchema.findByIdAndUpdate(
+            userId,
+            {
+              ...model,
+              password: hashedPassword,
+            },
+            { new: true }
+          ); // tra ve user da duoc update
         } else {
-          updateUserById = await this.userSchema.findByIdAndUpdate(userId, {
-            // neu khong update binh thuong
-            ...model,
-          });
+          updateUserById = await this.userSchema.findByIdAndUpdate(
+            userId,
+            {
+              // neu khong update binh thuong
+              ...model,
+            },
+            { new: true }
+          );
         }
 
         if (!updateUserById)
@@ -97,12 +111,19 @@ export default class UserService {
   ): Promise<IPagination<IUser>> {
     // lay tat ca user theo gioi han, phan trang, search
     let query;
-    if (keyword) { // search ban ghi co chua keyword
-      query =this.userSchema.find({
-        $or: [{email: keyword}, {firstname: keyword}, {lastname: keyword}]
-      }).sort({ date: -1 });
-    }else{
-      query =this.userSchema.find().sort({ date: -1 });
+    if (keyword) {
+      // search ban ghi co chua keyword
+      query = this.userSchema
+        .find({
+          $or: [
+            { email: keyword },
+            { firstname: keyword },
+            { lastname: keyword },
+          ],
+        })
+        .sort({ date: -1 });
+    } else {
+      query = this.userSchema.find().sort({ date: -1 });
     }
     const docs = await query
       .skip((page - 1) * 5) // bo qua bao nhieu ban ghi
@@ -117,11 +138,11 @@ export default class UserService {
     } as IPagination<IUser>;
   }
 
-  public async deleteUser(userId: string){
+  public async deleteUser(userId: string) {
     const deletedUser = await this.userSchema.findByIdAndDelete(userId).exec();
-    if(!deletedUser){
-      throw new HttpException(400, 'Your id is invalid !')
-    }else{
+    if (!deletedUser) {
+      throw new HttpException(400, "Your id is invalid !");
+    } else {
       return deletedUser;
     }
   }
