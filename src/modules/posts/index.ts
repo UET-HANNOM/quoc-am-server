@@ -1,5 +1,5 @@
 import PostController from "./controller";
-import PostScheme from "./model";
+import PostSchema from "./model";
 import PostRoutes from "./routes";
 
-export { PostScheme, PostController, PostRoutes};
+export { PostSchema, PostController, PostRoutes};

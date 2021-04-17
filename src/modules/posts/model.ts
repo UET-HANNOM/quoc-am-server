@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import IPost from "./interface";
 import IProfile from "./interface";
-const PostScheme = new mongoose.Schema({
+const PostSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
@@ -33,10 +33,8 @@ const PostScheme = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
       },
       text: {
-        type: {
-          type: String,
-          required: true,
-        },
+        type: String,
+        required: true,
       },
       name: {
         type: String,
@@ -56,4 +54,4 @@ const PostScheme = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<IPost & mongoose.Document>("posts", PostScheme);
+export default mongoose.model<IPost & mongoose.Document>("posts", PostSchema);

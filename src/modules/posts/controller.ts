@@ -38,7 +38,7 @@ export default class PostController {
     next: NextFunction
   ) => {
     try {
-      const result:IPost[] = await this.postService.getAllPost();
+      const result: IPost[] = await this.postService.getAllPost();
       res.status(200).json(result);
     } catch (err) {
       next(err);
@@ -57,23 +57,95 @@ export default class PostController {
       next(err);
     }
   };
-  public getAllPostPaging = async (req: Request, res: Response, next: NextFunction) => {
+  public getAllPostPaging = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      const page  = Number(req.params.page);
+      const page = Number(req.params.page);
       const keyword = req.query.keyword || "";
-      const result = await this.postService.getAllPostPaging(keyword.toString(), page);
+      const result = await this.postService.getAllPostPaging(
+        keyword.toString(),
+        page
+      );
       res.status(200).json(result);
     } catch (error) {
       next(error);
     }
-  }
-  public deletePost = async (req: Request, res: Response, next: NextFunction) => {
+  };
+  public deletePost = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      const postId  = req.params.id;
+      const postId = req.params.id;
       const result = await this.postService.deletePost(req.user.id, postId);
       res.status(200).json(result);
     } catch (error) {
       next(error);
     }
-  }
+  };
+
+  public likePost = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const postId = req.params.id;
+      const result = await this.postService.likePost(req.user.id, postId);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+  public unlikePost = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const postId = req.params.id;
+      const result = await this.postService.unlikePost(req.user.id, postId);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public addComment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const postId = req.params.id;
+
+      const result = await this.postService.addComment(
+        req.body.text,
+        req.user.id,
+        postId
+      );
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public removeComment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const postId = req.params.id;
+
+      const result = await this.postService.removeComment(
+        req.params.comment_id,
+        postId,
+        req.user.id
+      );
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
