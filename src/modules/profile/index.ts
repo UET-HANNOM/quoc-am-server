@@ -1,4 +1,4 @@
-import ProfileSchema from './model'
-export{ 
-    ProfileSchema
-}
+import ProfileSchema from "./model";
+import ProfileRoutes from "./routes";
+
+export { ProfileSchema, ProfileRoutes };

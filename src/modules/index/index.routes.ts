@@ -2,7 +2,7 @@ import { ROUTE } from "@core/interfaces";
 import { Router } from "express";
 import IndexController from "./index.controller";
 
-export default class InderRoutes implements ROUTE {
+export default class IndexRoutes implements ROUTE {
   public path = "/";
   public router = Router();
 

@@ -1,4 +1,4 @@
 import IndexController from "./index.controller";
-import InderRoutes from "./index.routes";
+import IndexRoutes from "./index.routes";
 
-export { IndexController, InderRoutes };
+export { IndexController, IndexRoutes };

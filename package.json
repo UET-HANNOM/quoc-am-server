@@ -1,5 +1,5 @@
 {
-  "name": "cssocial",
+  "name": "quocamserver",
   "version": "1.0.0",
   "description": "A social network for cs tech",
   "main": "src/server.ts",
@@ -21,6 +21,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.11",
     "morgan": "^1.10.0",
+    "normalize-url": "^6.0.0",
     "validator": "^13.5.2",
     "winston": "^3.3.3"
   },

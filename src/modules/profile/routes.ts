@@ -1,23 +1,36 @@
 import { ROUTE } from "@core/interfaces";
 import { authMiddleware } from "@core/middleware";
 import { Router } from "express";
-import UsersController from "./controller";
-export default class UsersRoutes implements ROUTE {
-  public path = "/api/users";
+import ProfileController from "./controller";
+export default class ProfileRoutes implements ROUTE {
+  public path = "/api/v1/profile";
   public router = Router();
 
-  public userController = new UsersController();
+  public profileController = new ProfileController();
 
-  constructor(){
+  constructor() {
     this.initalizeRoutes();
   }
 
-  private initalizeRoutes(){
-    this.router.post(this.path, this.userController.register) //POST
-    this.router.put(this.path + "/:id", this.userController.updateUser) // update là Put
-    this.router.get(this.path + "/:id", this.userController.getUserbyId)
-    this.router.get(this.path, this.userController.getAllUser)
-    this.router.get(this.path + "/paging/:page", this.userController.getAllUserPaging)
-    this.router.delete(this.path + "/:id", authMiddleware, this.userController.deleteUser)
+  private initalizeRoutes() {
+    this.router.get(this.path, this.profileController.getAllProfile); //POST
+    this.router.get(
+      this.path + "/user/:id",
+      this.profileController.getProfileById
+    ); // update là Put
+    this.router.get(
+      this.path + "/me",
+      authMiddleware,
+      this.profileController.getCurrentProfile
+    );
+    this.router.post(
+      this.path,
+      authMiddleware,
+      this.profileController.createProfile
+    );
+    this.router.delete(
+      this.path + "/:id",
+      this.profileController.deleteProfile
+    );
   }
 }
