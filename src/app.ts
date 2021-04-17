@@ -8,6 +8,8 @@ import cors from "cors";
 import { ROUTE } from "@core/interfaces";
 import { Logger } from "@core/utils";
 import { errorMiddleware } from "@core/middleware";
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
 export default class App {
   public app: express.Application;
   public port: string | number;
@@ -21,6 +23,7 @@ export default class App {
     this.initializeMiddleware();
     this.initializeRoutes(routes);
     this.initializeErrorMiddleware();
+    this.initializeSwagger();
   }
 
   public listen() {
@@ -40,9 +43,9 @@ export default class App {
       this.app.use(cors({ origin: true, credentials: true }));
     }
     this.app.use(express.json());
-    this.app.use(express.urlencoded({extended: true}));
+    this.app.use(express.urlencoded({ extended: true }));
   }
-  private initializeErrorMiddleware(){
+  private initializeErrorMiddleware() {
     this.app.use(errorMiddleware);
   }
   private initializeRoutes(routes: ROUTE[]) {
@@ -67,5 +70,15 @@ export default class App {
         .then(() => Logger.info("Database connect successfully! "))
         .catch((err) => Logger.error(err));
     }
+  }
+
+  private initializeSwagger() {
+    const swaggerDocument = YAML.load("./src/swagger.yaml");
+
+    this.app.use(
+      "/api-docs",
+      swaggerUi.serve,
+      swaggerUi.setup(swaggerDocument)
+    );
   }
 }
