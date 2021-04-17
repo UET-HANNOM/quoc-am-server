@@ -94,4 +94,4 @@ const ProfileSchema = new mongoose.Schema({
   date: Date,
 });
 
-export default mongoose.model<IProfile & mongoose.Document>("user", ProfileSchema);
+export default mongoose.model<IProfile & mongoose.Document>("profile", ProfileSchema);

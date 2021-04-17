@@ -40,6 +40,7 @@ class ProfileController {
   ) => {
     const userData = req.body;
     const userId = req.user.id;
+    console.log("object")
     try {
       const result: IProfile = await this.profileService.createProfile(
         userId,
