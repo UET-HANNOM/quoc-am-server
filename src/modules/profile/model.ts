@@ -91,7 +91,10 @@ const ProfileSchema = new mongoose.Schema({
       type: String,
     },
   },
-  date: Date,
+  date: {
+    type: Date,
+    default: Date.now
+  },
 });
 
 export default mongoose.model<IProfile & mongoose.Document>("profile", ProfileSchema);
