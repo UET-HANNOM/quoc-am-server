@@ -6,11 +6,13 @@ const PostScheme = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
+  title: {
+    type: String,
+    required: true,
+  },
   text: {
-    type: {
-      type: String,
-      required: true,
-    },
+    type: String,
+    required: true,
   },
   name: {
     type: String,
@@ -44,13 +46,13 @@ const PostScheme = new mongoose.Schema({
       },
       date: {
         type: Date,
-        default: Date.now
+        default: Date.now,
       },
     },
   ],
   date: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
 });
 

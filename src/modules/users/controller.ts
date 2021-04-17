@@ -14,9 +14,9 @@ export default class UsersController {
       next(err);
     }
   };
-  public getUserbyId = async(req: Request, res: Response, next: NextFunction) => {
+  public getUserById = async(req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = await this.userService.getUserbyId(req.params.id);
+      const user = await this.userService.getUserById(req.params.id);
       res.status(200).json(user);
     } catch (err) {
       next(err);

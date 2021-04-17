@@ -1,84 +1,79 @@
-import { IUser } from "@modules/auth";
 import { NextFunction, Request, Response } from "express";
-import IProfile from "./interface";
-import ProfileService from "./service";
+import IPost from "./interface";
+import PostService from "./service";
 
-class ProfileController {
-  private profileService = new ProfileService();
-
-  public getCurrentProfile = async (
+export default class PostController {
+  private postService = new PostService();
+  public createPost = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
-    const userId = req.user.id;
     try {
-      const result: Partial<IUser> = await this.profileService.getCurrentProfile(
-        userId
-      );
+      const model: any = req.body;
+      const userId: string = req.user.id;
+      const result = await this.postService.createPost(userId, model);
+      res.status(201).json(result);
+    } catch (err) {
+      next(err);
+    }
+  };
+  public updatePost = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const model: any = req.body;
+      const postId: string = req.params.id;
+      const result = await this.postService.updatePost(postId, model);
       res.status(200).json(result);
     } catch (err) {
       next(err);
     }
   };
-  public getAllProfile = async (
+  public getAllPost = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      const result: Partial<IUser>[] = await this.profileService.getAllProfile();
+      const result:IPost[] = await this.postService.getAllPost();
       res.status(200).json(result);
     } catch (err) {
       next(err);
     }
   };
-  public createProfile = async (
+  public getPostById = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
-    const userData = req.body;
-    const userId = req.user.id;
-    console.log("object")
     try {
-      const result: IProfile = await this.profileService.createProfile(
-        userId,
-        userData
-      );
+      const postId: string = req.params.id;
+      const result = await this.postService.getPostById(postId);
       res.status(200).json(result);
     } catch (err) {
       next(err);
     }
   };
-  public getProfileById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    const userId: string = req.params.id;
+  public getAllPostPaging = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result: Partial<IUser> = await this.profileService.getCurrentProfile(
-        userId
-      );
+      const page  = Number(req.params.page);
+      const keyword = req.query.keyword || "";
+      const result = await this.postService.getAllPostPaging(keyword.toString(), page);
       res.status(200).json(result);
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
-  };
-  public deleteProfile = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    const userId: string = req.params.id;
+  }
+  public deletePost = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await this.profileService.deleteProfile(userId);
-      res.status(200);
-    } catch (err) {
-      next(err);
+      const postId  = req.params.id;
+      const result = await this.postService.deletePost(req.user.id, postId);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
     }
-  };
+  }
 }
-
-export default ProfileController;

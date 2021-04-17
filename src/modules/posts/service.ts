@@ -1,92 +1,86 @@
-import { UserSchema } from "@modules/users";
 import { HttpException } from "@core/exceptions";
-import { ProfileSchema } from ".";
-import IProfile, { ISocial } from "./interface";
-import normalize from "normalize-url";
-import { IUser } from "@modules/auth";
-class ProfileService {
-  private profileSchema = ProfileSchema;
+import { IPagination } from "@core/interfaces";
+import { UserSchema } from "@modules/users";
+import { PostScheme } from ".";
+import IPost from "./interface";
 
-  public async getCurrentProfile(userId: string) {
-    const user = await this.profileSchema
-      .findOne({
-        user: userId,
-      })
-      .populate("user", ["name", "avatar"])
-      .exec();
-    if (!user) {
-      throw new HttpException(400, "There is no profile for this user!");
-    } else {
-      return user;
-    }
-  }
-  public async createProfile(userId: string, profileDto: any) {
-    const {
-      company,
-      location,
-      website,
-      bio,
-      skills,
-      status,
-      youtube,
-      twitter,
-      instagram,
-      linkedin,
-      facebook,
-      zalo,
-    } = profileDto;
-    const profileFields: Partial<IProfile> = {
+export default class PostService {
+  public async createPost(userId: string, postDto: any): Promise<IPost> {
+    const user = await UserSchema.findById(userId).select("-password").exec();
+    if (!user) throw new HttpException(400, "User id is not exist");
+
+    const newPost = new PostScheme({
+      title: postDto.title,
+      text: postDto.text,
+      name: user.firstname + " " + user.lastname,
+      avatar: user.avatar,
       user: userId,
-      company,
-      location,
-      website:
-        website && website != ""
-          ? normalize(website.toString(), { forceHttps: true })
-          : "",
-      bio,
-      skills: Array.isArray(skills)
-        ? skills
-        : skills.split(",").map((skill: string) => skill.trim()),
-      status,
-    };
+    });
+    const post = await newPost.save();
+    return post;
+  }
 
-    const socialFields: ISocial = {
-      youtube,
-      twitter,
-      instagram,
-      linkedin,
-      facebook,
-      zalo,
-    };
-    for (const [key, value] of Object.entries(socialFields)) {
-      if (value && value.length > 0) {
-        socialFields[key] = normalize(value, { forceHttps: true });
-      }
+  public async updatePost(postId: string, postDto: any): Promise<IPost> {
+    const post = await PostScheme.findByIdAndUpdate(
+      postId,
+      { ...postDto },
+      { new: true }
+    ).exec();
+    if (!post) {
+      throw new HttpException(400, "Post is not found");
     }
-    profileFields.social = socialFields;
-
-    const profile = await this.profileSchema
-      .findOneAndUpdate(
-        { user: userId },
-        { $set: profileFields },
-        { new: true, upsert: true, setDefaultsOnInsert: true }
-      )
-      .exec();
-
-    return profile;
+    return post;
   }
 
-  public async deleteProfile(userId: string) {
-    await this.profileSchema.findByIdAndRemove({ user: userId }).exec();
-    await UserSchema.findOneAndRemove({ _id: userId }).exec();
+  public async getAllPost(): Promise<IPost[]> {
+    const posts = await PostScheme.find().sort({ date: -1 }).exec();
+    return posts;
   }
-  public async getAllProfile(): Promise<Partial<IUser>[]> {
-    const profile = await this.profileSchema
-      .find()
-      .populate("user", ["name", "avatar"])
+
+  public async getPostById(useId: string): Promise<IPost> {
+    const post = await PostScheme.findById(useId).exec();
+    if (!post) {
+      throw new HttpException(400, "Post_id is not exit");
+    }
+    return post;
+  }
+  public async getAllPostPaging(
+    keyword: string,
+    page: number
+  ): Promise<IPagination<IPost>> {
+    // lay tat ca user theo gioi han, phan trang, search
+    let query;
+    if (keyword) {
+      // search ban ghi co chua keyword
+      query = PostScheme.find({
+        $or: [{ text: keyword }, { title: keyword }],
+      }).sort({ date: -1 });
+    } else {
+      query = PostScheme.find().sort({ date: -1 });
+    }
+    const docs = await query
+      .skip((page - 1) * 5) // bo qua bao nhieu ban ghi
+      .limit(5) // lay tiep bao nhieu ban ghi
       .exec();
-    return profile;
+    const rows = await query.estimatedDocumentCount().exec(); // tong so ban ghi
+    return {
+      total: rows,
+      page: page,
+      pageSize: 5,
+      item: docs,
+    } as IPagination<IPost>;
+  }
+
+  public async deletePost(userId: string, postId: string): Promise<IPost> {
+    const post = await PostScheme.findById(postId).exec();
+    if (!post) {
+      throw new HttpException(400, "Post not found");
+    }
+    if (post.user.toString() !== userId) {
+      throw new HttpException(400, "User is not authorized");
+    }
+
+    await post.remove();
+    return post;
   }
 }
-
-export default ProfileService;

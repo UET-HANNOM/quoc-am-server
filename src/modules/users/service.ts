@@ -90,7 +90,7 @@ export default class UserService {
     }
   }
 
-  public async getUserbyId(userId: string) {
+  public async getUserById(userId: string) {
     //getbyid
     const user = await this.userSchema.findById(userId);
     if (!user) {
