@@ -48,23 +48,21 @@ export default class PostService {
     keyword: string,
     page: number
   ): Promise<IPagination<IPost>> {
-    // lay tat ca user theo gioi han, phan trang, search
-    let query;
+    let query = {};
     if (keyword) {
-      // search ban ghi co chua keyword
-      query = PostSchema.find({
-        $or: [{ text: keyword }, { title: keyword }],
-      }).sort({ date: -1 });
-    } else {
-      query = PostSchema.find().sort({ date: -1 });
+      query = {
+        $or: [{ text: keyword }],
+      };
     }
-    const docs = await query
-      .skip((page - 1) * 5) // bo qua bao nhieu ban ghi
-      .limit(5) // lay tiep bao nhieu ban ghi
+
+    const docs = await PostSchema.find(query)
+      .skip((page - 1) * 5)
+      .limit(5)
       .exec();
-    const rows = await query.estimatedDocumentCount().exec(); // tong so ban ghi
+
+    const rowCount = await PostSchema.find(query).countDocuments().exec();
     return {
-      total: rows,
+      total: rowCount,
       page: page,
       pageSize: 5,
       item: docs,
@@ -112,19 +110,21 @@ export default class PostService {
     return post.likes;
   }
 
-  public async addComment(text:string, userId: string, postId: string): Promise<IComment[]> {
+  public async addComment(
+    text: string,
+    userId: string,
+    postId: string
+  ): Promise<IComment[]> {
     const post = await PostSchema.findById(postId).exec();
-    if (!post) throw new HttpException(400, 'Post not found');
+    if (!post) throw new HttpException(400, "Post not found");
 
-    const user = await UserSchema.findById(userId)
-      .select('-password')
-      .exec();
+    const user = await UserSchema.findById(userId).select("-password").exec();
 
-    if (!user) throw new HttpException(400, 'User not found');
+    if (!user) throw new HttpException(400, "User not found");
 
     const newComment = {
       text: text,
-      name: user.firstname + ' ' + user.lastname,
+      name: user.firstname + " " + user.lastname,
       avatar: user.avatar,
       user: userId,
     };
@@ -139,13 +139,13 @@ export default class PostService {
     userId: string
   ): Promise<IComment[]> {
     const post = await PostSchema.findById(postId).exec();
-    if (!post) throw new HttpException(400, 'Post not found');
+    if (!post) throw new HttpException(400, "Post not found");
 
     const comment = post.comments.find((c) => c._id.toString() === commentId);
-    if (!comment) throw new HttpException(400, 'Comment not found');
+    if (!comment) throw new HttpException(400, "Comment not found");
 
     if (comment.user.toString() !== userId)
-      throw new HttpException(401, 'User not authorized');
+      throw new HttpException(401, "User not authorized");
 
     post.comments = post.comments.filter(
       ({ _id }) => _id.toString() !== commentId
