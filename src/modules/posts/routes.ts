@@ -18,7 +18,6 @@ export default class PostRoutes implements ROUTE {
     this.router.get(this.path, authMiddleware, this.postController.getAllPost);
     this.router.get(
       this.path + "/:id",
-      authMiddleware,
       this.postController.getPostById
     );
     this.router.get(

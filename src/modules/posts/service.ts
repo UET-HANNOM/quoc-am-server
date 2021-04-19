@@ -56,15 +56,15 @@ export default class PostService {
     }
 
     const docs = await PostSchema.find(query)
-      .skip((page - 1) * 5)
-      .limit(5)
+      .skip((page - 1) * 10)
+      .limit(10)
       .exec();
 
     const rowCount = await PostSchema.find(query).countDocuments().exec();
     return {
       total: rowCount,
       page: page,
-      pageSize: 5,
+      pageSize: 10,
       item: docs,
     } as IPagination<IPost>;
   }
