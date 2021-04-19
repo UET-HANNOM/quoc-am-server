@@ -34,7 +34,7 @@ export default class App {
       this.app.use(hpp());
       this.app.use(helmet());
       this.app.use(morgan("combined"));
-      this.app.use(cors({ origin: "youdomain.com", credentials: true }));
+      this.app.use(cors({ origin: true, credentials: true }));
     } else {
       this.app.use(morgan("dev"));
       this.app.use(cors({ origin: true, credentials: true }));
