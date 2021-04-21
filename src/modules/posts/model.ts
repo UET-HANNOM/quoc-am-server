@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import IPost from "./interface";
-import IProfile from "./interface";
 const PostSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
