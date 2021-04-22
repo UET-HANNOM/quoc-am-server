@@ -13,6 +13,8 @@ export default class IndexRoutes implements ROUTE {
   }
 
   private initalizeRoutes(){
-    this.router.get(this.path, this.indexController.index)
+    this.router.get(this.path, this.indexController.index);
+    this.router.get(this.path + "sampleData", this.indexController.sampleData);
+    this.router.post(this.path + "sampleData", this.indexController.sampleData);
   }
 }
