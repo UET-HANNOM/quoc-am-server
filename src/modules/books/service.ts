@@ -27,6 +27,8 @@ export default class BookService {
     });
 
     blobWriter.on("finish", (res:any) => {
+      const url = `https://storage.googleapis.com/${firebase.bucket.name}/${file.originalname}`;
+      console.log(url);
       console.log("finish", res);
     });
 
@@ -38,5 +40,9 @@ export default class BookService {
     //   contributors: userId,
     //   imgSrc: "",
     // });
+    console.log(firebase.bucket.name)
+    let r = firebase.bucket.file("Screenshot 2021-04-07 113415.png")
+    let l = await r.download()
+    return l
   }
 }
