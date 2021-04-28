@@ -6,6 +6,7 @@ import App from "./app";
 import { ProfileRoutes } from "@modules/profile";
 import { PostRoutes } from "@modules/posts";
 import { BookRoutes } from "@modules/books";
+import ScanRoutes from "@modules/scan/routes";
 
 validateEnv();
 
@@ -16,6 +17,7 @@ const routes = [
   new ProfileRoutes(),
   new PostRoutes(),
   new BookRoutes(),
+  new ScanRoutes()
 ];
 const app = new App(routes);
 app.listen();

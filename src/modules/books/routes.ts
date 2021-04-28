@@ -16,7 +16,6 @@ export default class BookRoutes implements ROUTE {
     const upload = multer({
       storage: multer.memoryStorage(),
     });
-    console.log("r")
     this.router.post(this.path + "/upload" , this.bockController.createBook);
   }
 }
